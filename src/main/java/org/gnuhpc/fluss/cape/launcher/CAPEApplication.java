@@ -31,6 +31,7 @@ import org.gnuhpc.fluss.cape.hbase.metadata.TableStateManager;
 import org.gnuhpc.fluss.cape.hbase.metadata.VirtualRegionManager;
 import org.gnuhpc.fluss.cape.hbase.server.HBaseCompatServer;
 import org.gnuhpc.fluss.cape.hbase.server.HealthCheckServer;
+import org.gnuhpc.fluss.cape.http.server.HTTPCompatServer;
 import org.gnuhpc.fluss.cape.kafka.server.KafkaCompatServer;
 import org.gnuhpc.fluss.cape.pg.server.PgCompatServer;
 import org.gnuhpc.fluss.cape.pg.server.PgServerConfig;
@@ -204,6 +205,10 @@ public class CAPEApplication {
         
         if (capeConfig.isKafkaEnabled()) {
             startKafkaServer();
+        }
+
+        if (capeConfig.isHttpCompatEnabled()) {
+            startHttpCompatServer();
         }
         
         lifecycleManager.startAll();
@@ -385,6 +390,12 @@ public class CAPEApplication {
         KafkaCompatServer kafkaServer = serverFactory.createKafkaServer();
         lifecycleManager.registerComponent(new ServerComponentAdapter(
                 kafkaServer, "KafkaServer"));
+    }
+
+    private void startHttpCompatServer() {
+        HTTPCompatServer httpServer = serverFactory.createHTTPCompatServer();
+        lifecycleManager.registerComponent(new ServerComponentAdapter(
+                httpServer, "HTTPCompatServer"));
     }
     
     private void applyOptionalConfig(Configuration config) {

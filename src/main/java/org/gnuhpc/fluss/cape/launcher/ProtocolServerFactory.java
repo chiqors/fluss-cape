@@ -26,6 +26,8 @@ import org.gnuhpc.fluss.cape.hbase.server.HealthCheckServer;
 import org.gnuhpc.fluss.cape.hbase.executor.HBaseRequestRouter;
 import org.gnuhpc.fluss.cape.kafka.config.KafkaCompatConfig;
 import org.gnuhpc.fluss.cape.kafka.server.KafkaCompatServer;
+import org.gnuhpc.fluss.cape.http.config.HTTPCompatConfig;
+import org.gnuhpc.fluss.cape.http.server.HTTPCompatServer;
 import org.gnuhpc.fluss.cape.pg.server.PgAuthConfig;
 import org.gnuhpc.fluss.cape.pg.server.PgCompatServer;
 import org.gnuhpc.fluss.cape.pg.server.PgServerConfig;
@@ -125,6 +127,13 @@ public class ProtocolServerFactory {
         int healthCheckPort = capeConfig.getHealthCheckPort();
         HealthCheckServer server = new HealthCheckServer(healthCheckPort, flussConnection, zooKeeper);
         LOG.info("Created health check server on port: {}", healthCheckPort);
+        return server;
+    }
+
+    public HTTPCompatServer createHTTPCompatServer() {
+        HTTPCompatConfig httpConfig = HTTPCompatConfig.fromCapeConfig(capeConfig);
+        HTTPCompatServer server = new HTTPCompatServer(httpConfig, flussConnection, flussAdmin);
+        LOG.info("Created HTTPCompatServer: {}:{}", httpConfig.getBindAddress(), httpConfig.getBindPort());
         return server;
     }
     
