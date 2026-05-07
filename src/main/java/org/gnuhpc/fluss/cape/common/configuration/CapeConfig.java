@@ -156,6 +156,57 @@ public class CapeConfig {
         return getBoolean("hbase.compat.auto.discover", true);
     }
 
+    // HTTP Compat Config
+    public boolean isHttpCompatEnabled() {
+        return getBoolean("http.compat.enabled", false);
+    }
+
+    public String getHttpCompatBindAddress() {
+        return get("http.compat.bind.address", "0.0.0.0");
+    }
+
+    public int getHttpCompatBindPort() {
+        return getInt("http.compat.bind.port", 18080);
+    }
+
+    public String getHttpCompatAuthToken() {
+        return get("http.compat.auth.token", "");
+    }
+
+    public boolean isHttpCompatAllowAdminWrite() {
+        return getBoolean("http.compat.allow.admin.write", false);
+    }
+
+    public boolean isHttpCompatAllowDataWrite() {
+        return getBoolean("http.compat.allow.data.write", false);
+    }
+
+    public int getHttpCompatMaxRequestBytes() {
+        return getInt("http.compat.max.request.bytes", 1048576);
+    }
+
+    public int getHttpCompatDefaultLimit() {
+        return getInt("http.compat.default.limit", 100);
+    }
+
+    public int getHttpCompatMaxLimit() {
+        return getInt("http.compat.max.limit", 1000);
+    }
+
+    public int getHttpCompatSubscriptionMaxCount() {
+        return getInt("http.compat.subscription.max.count", 100);
+    }
+
+    public long getHttpCompatSubscriptionIdleTimeoutMs() {
+        String val = get("http.compat.subscription.idle.timeout.ms", null);
+        if (val == null) return 600000L;
+        try {
+            return Long.parseLong(val);
+        } catch (NumberFormatException e) {
+            return 600000L;
+        }
+    }
+
     // Helper methods for property resolution
     public String get(String key, String defaultValue, String... altKeys) {
         String value = System.getProperty(key);
