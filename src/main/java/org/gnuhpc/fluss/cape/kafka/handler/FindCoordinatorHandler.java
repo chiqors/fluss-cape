@@ -40,7 +40,7 @@ public class FindCoordinatorHandler {
     private final int coordinatorPort;
     
     public FindCoordinatorHandler(KafkaCompatConfig config) {
-        this.coordinatorHost = "localhost";
+        this.coordinatorHost = config.getAdvertisedHost().equals("0.0.0.0") ? "localhost" : config.getAdvertisedHost();
         this.coordinatorPort = config.getPort();
     }
     

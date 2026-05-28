@@ -80,8 +80,24 @@ public class CapeConfig {
         return get("kafka.bind.address", "0.0.0.0");
     }
 
+    public String getKafkaAdvertisedHost() {
+        return get("kafka.advertised.host", getKafkaBindAddress());
+    }
+
     public int getKafkaPort() {
         return getInt("kafka.bind.port", 9092);
+    }
+
+    public boolean isKafkaDatalakeEnabled() {
+        return getBoolean("kafka.table.datalake.enabled", true);
+    }
+
+    public String getKafkaDatalakeFreshness() {
+        return get("kafka.table.datalake.freshness", "30s");
+    }
+
+    public int getKafkaDefaultNumBuckets() {
+        return getInt("kafka.table.default.num.buckets", 3);
     }
 
     // PostgreSQL Config

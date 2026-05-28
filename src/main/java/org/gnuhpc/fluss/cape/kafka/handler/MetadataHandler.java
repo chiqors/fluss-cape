@@ -20,6 +20,7 @@ package org.gnuhpc.fluss.cape.kafka.handler;
 import org.apache.fluss.client.Connection;
 import org.apache.fluss.client.admin.Admin;
 import org.apache.fluss.metadata.Schema;
+import org.apache.fluss.metadata.TableChange;
 import org.apache.fluss.metadata.TableDescriptor;
 import org.apache.fluss.metadata.TablePath;
 import org.apache.fluss.types.DataTypes;
@@ -42,6 +43,8 @@ import java.util.concurrent.TimeUnit;
 public class MetadataHandler {
     private static final Logger LOG = LoggerFactory.getLogger(MetadataHandler.class);
     private static final long TIMEOUT_MS = 5000;
+    private static final String DATALAKE_ENABLED = "table.datalake.enabled";
+    private static final String DATALAKE_FRESHNESS = "table.datalake.freshness";
 
     private final Connection flussConnection;
     private final KafkaCompatConfig config;
@@ -84,7 +87,7 @@ public class MetadataHandler {
         
         MetadataResponseData responseData = new MetadataResponseData();
         
-        String advertiseHost = config.getHost().equals("0.0.0.0") ? "localhost" : config.getHost();
+        String advertiseHost = config.getAdvertisedHost().equals("0.0.0.0") ? "localhost" : config.getAdvertisedHost();
         Node brokerNode = new Node(config.getNodeId(), advertiseHost, config.getPort());
         LOG.info("Advertising broker in metadata: nodeId={}, host={}, port={}", 
                  brokerNode.id(), brokerNode.host(), brokerNode.port());
@@ -202,6 +205,7 @@ public class MetadataHandler {
                     .build();
                 
                 admin.createTable(tablePath, tableDescriptor, false).get();
+                applyDatalakeProperties(admin, tablePath);
                 LOG.info("Successfully auto-created Kafka table: {}", tablePath);
                 return null;
             } catch (Exception e) {
@@ -239,6 +243,16 @@ public class MetadataHandler {
                 LOG.info("Added metadata for topic {} with {} partitions, leader nodeId={}", 
                         topicName, bucketCount, config.getNodeId());
             });
+    }
+
+    private void applyDatalakeProperties(Admin admin, TablePath tablePath) throws Exception {
+        admin.alterTable(
+                        tablePath,
+                        List.of(
+                                TableChange.set(DATALAKE_ENABLED, Boolean.toString(config.isDatalakeEnabled())),
+                                TableChange.set(DATALAKE_FRESHNESS, config.getDatalakeFreshness())),
+                        false)
+                .get();
     }
     
     private String formatTopicName(TablePath tablePath) {

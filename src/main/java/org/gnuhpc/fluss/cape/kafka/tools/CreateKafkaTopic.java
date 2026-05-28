@@ -5,6 +5,7 @@ import org.apache.fluss.client.ConnectionFactory;
 import org.apache.fluss.client.admin.Admin;
 import org.apache.fluss.config.Configuration;
 import org.apache.fluss.metadata.Schema;
+import org.apache.fluss.metadata.TableChange;
 import org.apache.fluss.metadata.TableDescriptor;
 import org.apache.fluss.metadata.TablePath;
 import org.apache.fluss.types.DataTypes;
@@ -27,6 +28,9 @@ import org.apache.fluss.types.DataTypes;
  * </pre>
  */
 public class CreateKafkaTopic {
+    private static final String DATALAKE_ENABLED = "table.datalake.enabled";
+    private static final String DATALAKE_FRESHNESS = "table.datalake.freshness";
+    private static final String DEFAULT_FRESHNESS = "30s";
 
     public static void main(String[] args) throws Exception {
         if (args.length < 3) {
@@ -89,11 +93,19 @@ public class CreateKafkaTopic {
                 .build();
 
         admin.createTable(tablePath, tableDescriptor, false).get();
+        admin.alterTable(
+                tablePath,
+                java.util.List.of(
+                        TableChange.set(DATALAKE_ENABLED, "true"),
+                        TableChange.set(DATALAKE_FRESHNESS, DEFAULT_FRESHNESS)),
+                false)
+                .get();
         
         System.out.println("  ✓ Created '" + database + "." + topicName + "'");
         System.out.println("     - Type: LOG TABLE");
         System.out.println("     - Partitions: " + partitions);
         System.out.println("     - Schema: [key BYTES, value BYTES, timestamp BIGINT]");
+        System.out.println("     - Properties: [" + DATALAKE_ENABLED + "=true, " + DATALAKE_FRESHNESS + "=" + DEFAULT_FRESHNESS + "]");
         System.out.println();
         System.out.println("You can now produce/consume using:");
         System.out.println("  kafkacat -b localhost:9093 -t " + database + "." + topicName + " -P");

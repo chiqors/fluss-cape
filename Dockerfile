@@ -64,8 +64,12 @@ ENV FLUSS_BOOTSTRAP="localhost:9123" \
     PG_AUTH_MODE="trust" \
     KAFKA_ENABLE="true" \
     KAFKA_BIND_ADDRESS="0.0.0.0" \
+    KAFKA_ADVERTISED_HOST="localhost" \
     KAFKA_BIND_PORT="9092" \
-    KAFKA_DEFAULT_DATABASE="default"
+    KAFKA_DEFAULT_DATABASE="default" \
+    KAFKA_TABLE_DATALAKE_ENABLED="true" \
+    KAFKA_TABLE_DATALAKE_FRESHNESS="30s" \
+    KAFKA_TABLE_DEFAULT_NUM_BUCKETS="3"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
@@ -73,6 +77,9 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 
 # Run the application
 ENTRYPOINT ["sh", "-c", "java -Xmx2g -Xms1g \
+  --add-opens=java.base/java.nio=ALL-UNNAMED \
+  --add-opens=java.base/jdk.internal.misc=ALL-UNNAMED \
+  --add-opens=java.base/sun.nio.ch=ALL-UNNAMED \
   -Dlog4j.configurationFile=classpath:log4j2.xml \
   -Dfluss.bootstrap.servers=${FLUSS_BOOTSTRAP} \
   -Dhbase.zookeeper.quorum=${ZK_QUORUM} \
@@ -91,8 +98,12 @@ ENTRYPOINT ["sh", "-c", "java -Xmx2g -Xms1g \
   -Dpg.auth.mode=${PG_AUTH_MODE} \
   -Dkafka.enable=${KAFKA_ENABLE} \
   -Dkafka.bind.address=${KAFKA_BIND_ADDRESS} \
+  -Dkafka.advertised.host=${KAFKA_ADVERTISED_HOST} \
   -Dkafka.bind.port=${KAFKA_BIND_PORT} \
   -Dkafka.default.database=${KAFKA_DEFAULT_DATABASE} \
+  -Dkafka.table.datalake.enabled=${KAFKA_TABLE_DATALAKE_ENABLED} \
+  -Dkafka.table.datalake.freshness=${KAFKA_TABLE_DATALAKE_FRESHNESS} \
+  -Dkafka.table.default.num.buckets=${KAFKA_TABLE_DEFAULT_NUM_BUCKETS} \
   ${SERVER_ID:+-Dserver.id=$SERVER_ID} \
   ${TABLES:+-Dhbase.compat.tables=$TABLES} \
   -jar /app/fluss-cape.jar"]

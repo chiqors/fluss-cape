@@ -22,6 +22,7 @@ import org.apache.fluss.client.admin.Admin;
 import org.apache.fluss.client.table.Table;
 import org.apache.fluss.client.table.writer.AppendWriter;
 import org.apache.fluss.metadata.Schema;
+import org.apache.fluss.metadata.TableChange;
 import org.apache.fluss.metadata.TableDescriptor;
 import org.apache.fluss.metadata.TablePath;
 import org.apache.fluss.row.InternalRow;
@@ -48,6 +49,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class ProduceHandler {
     private static final Logger LOG = LoggerFactory.getLogger(ProduceHandler.class);
+    private static final String DATALAKE_ENABLED = "table.datalake.enabled";
+    private static final String DATALAKE_FRESHNESS = "table.datalake.freshness";
 
     private final Connection flussConnection;
     private final WriterPool writerPool;
@@ -279,10 +282,28 @@ public class ProduceHandler {
                 admin.createTable(tablePath, tableDescriptor, false).get();
                 LOG.info("Successfully created Kafka table: {}", tablePath);
             }
+            ensureTieringProperties(admin, tablePath);
         } catch (Exception e) {
             LOG.error("Failed to create Kafka table: {}", tablePath, e);
             throw new RuntimeException("Failed to ensure table exists: " + tablePath, e);
         }
+    }
+
+    private void ensureTieringProperties(Admin admin, TablePath tablePath) throws Exception {
+        admin.alterTable(
+                        tablePath,
+                        List.of(
+                                TableChange.set(DATALAKE_ENABLED, Boolean.toString(config.isDatalakeEnabled())),
+                                TableChange.set(DATALAKE_FRESHNESS, config.getDatalakeFreshness())),
+                        false)
+                .get();
+        LOG.info(
+                "Ensured tiering properties for Kafka table {}: {}={}, {}={}",
+                tablePath,
+                DATALAKE_ENABLED,
+                config.isDatalakeEnabled(),
+                DATALAKE_FRESHNESS,
+                config.getDatalakeFreshness());
     }
 
     public void close() {

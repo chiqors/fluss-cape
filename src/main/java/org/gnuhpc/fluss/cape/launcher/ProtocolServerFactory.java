@@ -106,20 +106,24 @@ public class ProtocolServerFactory {
     
     public KafkaCompatServer createKafkaServer() throws Exception {
         String kafkaBindAddress = capeConfig.getKafkaBindAddress();
+        String kafkaAdvertisedHost = capeConfig.getKafkaAdvertisedHost();
         int kafkaPort = capeConfig.getKafkaPort();
         String kafkaDefaultDatabase = capeConfig.getKafkaDefaultDatabase();
         
         KafkaCompatConfig kafkaConfig = KafkaCompatConfig.builder()
                 .host(kafkaBindAddress)
+                .advertisedHost(kafkaAdvertisedHost)
                 .port(kafkaPort)
                 .nodeId(0)
                 .defaultDatabase(kafkaDefaultDatabase)
                 .autoCreateTables(true)
-                .defaultNumBuckets(3)
+                .defaultNumBuckets(capeConfig.getKafkaDefaultNumBuckets())
+                .datalakeEnabled(capeConfig.isKafkaDatalakeEnabled())
+                .datalakeFreshness(capeConfig.getKafkaDatalakeFreshness())
                 .build();
         
         KafkaCompatServer server = new KafkaCompatServer(flussConnection, kafkaConfig);
-        LOG.info("Created Kafka server: {}:{}", kafkaBindAddress, kafkaPort);
+        LOG.info("Created Kafka server: bind={}:{}, advertised={}:{}", kafkaBindAddress, kafkaPort, kafkaAdvertisedHost, kafkaPort);
         return server;
     }
     

@@ -24,6 +24,7 @@ public class KafkaCompatConfig {
     
     // Server configuration
     private final String host;
+    private final String advertisedHost;
     private final int port;
     private final int nodeId;
     
@@ -35,6 +36,10 @@ public class KafkaCompatConfig {
     
     // Number of buckets for auto-created log tables
     private final int defaultNumBuckets;
+
+    // Datalake/tiering properties for auto-created Kafka tables
+    private final boolean datalakeEnabled;
+    private final String datalakeFreshness;
     
     public static final String DEFAULT_HOST = "0.0.0.0";
     public static final int DEFAULT_PORT = 9092;
@@ -42,14 +47,19 @@ public class KafkaCompatConfig {
     public static final String DEFAULT_DATABASE = "default";
     public static final boolean DEFAULT_AUTO_CREATE_TABLES = true;
     public static final int DEFAULT_NUM_BUCKETS = 3;
+    public static final boolean DEFAULT_DATALAKE_ENABLED = true;
+    public static final String DEFAULT_DATALAKE_FRESHNESS = "30s";
     
     private KafkaCompatConfig(Builder builder) {
         this.host = builder.host;
+        this.advertisedHost = builder.advertisedHost;
         this.port = builder.port;
         this.nodeId = builder.nodeId;
         this.defaultDatabase = builder.defaultDatabase;
         this.autoCreateTables = builder.autoCreateTables;
         this.defaultNumBuckets = builder.defaultNumBuckets;
+        this.datalakeEnabled = builder.datalakeEnabled;
+        this.datalakeFreshness = builder.datalakeFreshness;
     }
     
     public String getHost() {
@@ -58,6 +68,10 @@ public class KafkaCompatConfig {
     
     public int getPort() {
         return port;
+    }
+
+    public String getAdvertisedHost() {
+        return advertisedHost;
     }
     
     public int getNodeId() {
@@ -75,6 +89,14 @@ public class KafkaCompatConfig {
     public int getDefaultNumBuckets() {
         return defaultNumBuckets;
     }
+
+    public boolean isDatalakeEnabled() {
+        return datalakeEnabled;
+    }
+
+    public String getDatalakeFreshness() {
+        return datalakeFreshness;
+    }
     
     public static Builder builder() {
         return new Builder();
@@ -82,11 +104,14 @@ public class KafkaCompatConfig {
     
     public static class Builder {
         private String host = DEFAULT_HOST;
+        private String advertisedHost = DEFAULT_HOST;
         private int port = DEFAULT_PORT;
         private int nodeId = DEFAULT_NODE_ID;
         private String defaultDatabase = DEFAULT_DATABASE;
         private boolean autoCreateTables = DEFAULT_AUTO_CREATE_TABLES;
         private int defaultNumBuckets = DEFAULT_NUM_BUCKETS;
+        private boolean datalakeEnabled = DEFAULT_DATALAKE_ENABLED;
+        private String datalakeFreshness = DEFAULT_DATALAKE_FRESHNESS;
         
         public Builder host(String host) {
             this.host = host;
@@ -95,6 +120,11 @@ public class KafkaCompatConfig {
         
         public Builder port(int port) {
             this.port = port;
+            return this;
+        }
+
+        public Builder advertisedHost(String advertisedHost) {
+            this.advertisedHost = advertisedHost;
             return this;
         }
         
@@ -115,6 +145,16 @@ public class KafkaCompatConfig {
         
         public Builder defaultNumBuckets(int defaultNumBuckets) {
             this.defaultNumBuckets = defaultNumBuckets;
+            return this;
+        }
+
+        public Builder datalakeEnabled(boolean datalakeEnabled) {
+            this.datalakeEnabled = datalakeEnabled;
+            return this;
+        }
+
+        public Builder datalakeFreshness(String datalakeFreshness) {
+            this.datalakeFreshness = datalakeFreshness;
             return this;
         }
         

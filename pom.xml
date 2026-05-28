@@ -34,7 +34,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         
         <!-- Dependency versions -->
-        <fluss.version>0.9.0-incubating</fluss.version>
+        <fluss.version>0.9.1-incubating</fluss.version>
         <hbase.version>2.5.5</hbase.version>
         <hadoop.version>2.10.2</hadoop.version>
         <netty.version>4.1.108.Final</netty.version>
