@@ -89,7 +89,7 @@ public class CapeConfig {
     }
 
     public boolean isKafkaDatalakeEnabled() {
-        return getBoolean("kafka.table.datalake.enabled", true);
+        return getBoolean("kafka.table.datalake.enabled", false);
     }
 
     public String getKafkaDatalakeFreshness() {

@@ -82,7 +82,11 @@ java -jar fluss-cape-1.0.0.jar [OPTIONS]
 | `--kafka.enable` | Boolean | `true` | Enable Kafka protocol server |
 | `--kafka.bind.address` | String | `0.0.0.0` | Kafka server bind address |
 | `--kafka.bind.port` | Integer | `9092` | Kafka server port |
+| `--kafka.advertised.host` | String | `0.0.0.0` | Host advertised to Kafka clients in metadata responses |
 | `--kafka.default.database` | String | `default` | Default database for topic mapping |
+| `--kafka.table.default.num.buckets` | Integer | `3` | Bucket count for auto-created Kafka-backed Fluss tables |
+| `--kafka.table.datalake.enabled` | Boolean | `false` | Whether CAPE marks Kafka-created Fluss tables as datalake-enabled |
+| `--kafka.table.datalake.freshness` | String | `30s` | Freshness interval applied to Kafka-created datalake tables |
 
 ### PostgreSQL Protocol
 
@@ -134,7 +138,11 @@ redis.worker.threads=8
 kafka.enable=true
 kafka.bind.address=0.0.0.0
 kafka.bind.port=9092
+kafka.advertised.host=localhost
 kafka.default.database=default
+kafka.table.default.num.buckets=3
+kafka.table.datalake.enabled=false
+kafka.table.datalake.freshness=30s
 
 # PostgreSQL protocol
 pg.enabled=true

@@ -47,7 +47,7 @@ public class KafkaCompatConfig {
     public static final String DEFAULT_DATABASE = "default";
     public static final boolean DEFAULT_AUTO_CREATE_TABLES = true;
     public static final int DEFAULT_NUM_BUCKETS = 3;
-    public static final boolean DEFAULT_DATALAKE_ENABLED = true;
+    public static final boolean DEFAULT_DATALAKE_ENABLED = false;
     public static final String DEFAULT_DATALAKE_FRESHNESS = "30s";
     
     private KafkaCompatConfig(Builder builder) {

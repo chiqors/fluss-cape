@@ -74,6 +74,31 @@ docker run -d --name fluss-cape --network host \
   fluss-cape:1.0.0
 ```
 
+**Kafka datalake-enabled topics**:
+
+```bash
+docker run -d --name fluss-cape --network host \
+  -e FLUSS_BOOTSTRAP=localhost:9123 \
+  -e ZK_QUORUM=localhost:2181 \
+  -e KAFKA_ENABLE=true \
+  -e KAFKA_BIND_PORT=9092 \
+  -e KAFKA_ADVERTISED_HOST=localhost \
+  -e KAFKA_TABLE_DEFAULT_NUM_BUCKETS=1 \
+  -e KAFKA_TABLE_DATALAKE_ENABLED=true \
+  -e KAFKA_TABLE_DATALAKE_FRESHNESS=30s \
+  -e HEALTH_PORT=8081 \
+  fluss-cape:1.0.0
+```
+
+With these settings, Kafka topics auto-created through CAPE are backed by Fluss log tables and CAPE applies:
+
+- `table.datalake.enabled`
+- `table.datalake.freshness`
+
+This is useful when you want Fluss lake tiering jobs to discover Kafka-created tables automatically.
+
+By default, `KAFKA_TABLE_DATALAKE_ENABLED` is `false`, so Kafka-created tables stay as regular Fluss log tables unless you opt in explicitly.
+
 **Custom ports** (avoid conflicts):
 
 ```bash
